@@ -2,12 +2,14 @@ const express = require("express");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const colors = require("colors");
-const app = express();
+
+const userRoutes=require('./routes/userRoutes')
 
 // Load environment variables from .env file
 dotenv.config();
 
 connectDB();
+const app = express();
 
 app.get("/", (req, res) => {
   res.send("Server Started successfully");

@@ -10,12 +10,15 @@ dotenv.config();
 
 connectDB();
 const app = express();
+app.use(express.json());
+ //to accept the json data
 
 app.get("/", (req, res) => {
   res.send("Server Started successfully");
 });
 app.use("/api/user", userRoutes);
 
-const PORT = process.env.PORT || 5000;
+
+const PORT = process.env.PORT || 5004;
 
 app.listen(PORT, console.log(`Server running successful on ${PORT}`.green.bold));

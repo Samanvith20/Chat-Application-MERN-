@@ -25,7 +25,7 @@ const registeruser = asyncHandler(async (req, res) => {
     pic,
   });
 
-  if (user) {
+  if (user && (await user.matchPassword(password))) {
     res.status(201).json({
       _id: user._id,
       name: user.name,
@@ -39,8 +39,27 @@ const registeruser = asyncHandler(async (req, res) => {
     throw new Error("User not found");
   }
 });
+const authUser=asyncHandler(async(req,res)=>{
+  const{email,password} =req.body
+  const user = await User.findOne({ email });
+  if(user){
+    res.status(201).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      isAdmin: user.isAdmin,
+      pic: user.pic,
+      token: generateToken(user._id),
+    });
+
+  }else{
+    res.status(401)
+    throw new Error("Invalid email or password")
+  }
+
+})
 
 module.exports = {
-  registeruser,
+  registeruser,authUser
 };
 

@@ -16,6 +16,17 @@ const userSchema = mongoose.Schema(
 },
   {timestamps:true}
 );
+userSchema.methods.matchpassword= async function(enteredpassword){
+  return  await bcrypt.compare(enteredpassword,this.password)
+}
+userSchema.pre("save", async function (next) {
+  if (!this.isModified) {
+    next();
+  } 
+  const salt = await bcrypt.genSalt(10);
+  // A "salt" is a random value that is combined with the user's password before hashing it. 
+  this.password = await bcrypt.hash(this.password, salt);
+})
 const User = mongoose.model("User", userSchema);
 // The schema defines the structure of documents within the collection, specifying the fields, their types, and any validation rules.
 module.exports = User;

@@ -16,5 +16,5 @@ const userSchema = mongoose.Schema(
   {timestamps:true}
 );
 const User = mongoose.model("User", userSchema);
-
+// The schema defines the structure of documents within the collection, specifying the fields, their types, and any validation rules.
 module.exports = User;

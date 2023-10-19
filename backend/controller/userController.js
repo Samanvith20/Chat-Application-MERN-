@@ -60,22 +60,18 @@ const authUser = asyncHandler(async (req, res) => {
 
 const allUsers = asyncHandler(async (req, res) => {
   const keyword = req.query.search
-  // req.query object to access the query parameters of a URL
     ? {
         $or: [
-          // $or: This is a logical operator used in Mongoose queries to perform an OR operation
           { name: { $regex: req.query.search, $options: "i" } },
           { email: { $regex: req.query.search, $options: "i" } },
-          // This is a regular expression operator in Mongoose. It's used to perform a regular expression search on a field
-          //  The $options property is set to "i", which makes the regular expression case-insensitive.
         ],
       }
     : {};
 
-  const users = await User.find(keyword) .find({ _id: { $ne: req.user._id } });
-  //This is a Mongoose query that performs a search for user documents in the MongoDB database
+  const users = await User.find({ ...keyword, _id: { $ne: req.user._id } });
   res.send(users);
 });
+
 
 module.exports = {
   registeruser,

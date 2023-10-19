@@ -4,6 +4,7 @@ const connectDB = require("./config/db");
 const colors = require("colors");
 
 const userRoutes=require('./routes/userRoutes');
+const chatRoutes=require('./routes/chatRoutes');
 const { notFound, errorHandler } = require("./middleware/errormiddleware");
 
 // Load environment variables from .env file
@@ -18,10 +19,11 @@ app.get("/", (req, res) => {
   res.send("Server Started successfully");
 });
 app.use("/api/user", userRoutes);
+app.use("/api/chat", chatRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
 
-const PORT = process.env.PORT || 5004;
+const PORT = process.env.PORT || 5001;
 
 app.listen(PORT, console.log(`Server running successful on ${PORT}`.green.bold));

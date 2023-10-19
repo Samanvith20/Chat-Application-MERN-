@@ -14,7 +14,7 @@ const registeruser = asyncHandler(async (req, res) => {
   const userExists = await User.findOne({ email }); // Use "User" instead of "user" for the model
 
   if (userExists) {
-    res.status(400);
+    res.status(401);
     throw new Error("User already exists");
   }
 
@@ -25,7 +25,7 @@ const registeruser = asyncHandler(async (req, res) => {
     pic,
   });
 
-  if (user && (await user.matchPassword(password))) {
+  if (user) {
     res.status(201).json({
       _id: user._id,
       name: user.name,
@@ -39,11 +39,12 @@ const registeruser = asyncHandler(async (req, res) => {
     throw new Error("User not found");
   }
 });
-const authUser=asyncHandler(async(req,res)=>{
-  const{email,password} =req.body
+
+const authUser = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
   const user = await User.findOne({ email });
-  if(user){
-    res.status(201).json({
+  if (user && (await user.matchpassword(password))) {
+    res.status(200).json({
       _id: user._id,
       name: user.name,
       email: user.email,
@@ -51,15 +52,33 @@ const authUser=asyncHandler(async(req,res)=>{
       pic: user.pic,
       token: generateToken(user._id),
     });
-
-  }else{
-    res.status(401)
-    throw new Error("Invalid email or password")
+  } else {
+    res.status(401);
+    throw new Error("Invalid email or password");
   }
+});
 
-})
+const allUsers = asyncHandler(async (req, res) => {
+  const keyword = req.query.search
+  // req.query object to access the query parameters of a URL
+    ? {
+        $or: [
+          // $or: This is a logical operator used in Mongoose queries to perform an OR operation
+          { name: { $regex: req.query.search, $options: "i" } },
+          { email: { $regex: req.query.search, $options: "i" } },
+          // This is a regular expression operator in Mongoose. It's used to perform a regular expression search on a field
+          //  The $options property is set to "i", which makes the regular expression case-insensitive.
+        ],
+      }
+    : {};
+
+  const users = await User.find(keyword) .find({ _id: { $ne: req.user._id } });
+  //This is a Mongoose query that performs a search for user documents in the MongoDB database
+  res.send(users);
+});
 
 module.exports = {
-  registeruser,authUser
+  registeruser,
+  authUser,
+  allUsers
 };
-
